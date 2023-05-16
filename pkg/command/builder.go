@@ -2,6 +2,7 @@ package command
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"strings"
 )
@@ -16,14 +17,18 @@ type (
 	}
 
 	Command struct {
-		Name  string
-		Label string
-		Args  []Arg
+		Name  string `json:"name"`
+		Label string `json:"label,omitempty"`
+		Args  []Arg  `json:"args,omitempty"`
 	}
 
 	Arg struct {
-		Name            string
-		ValueDescriptor string
+		Name            string `json:"name"`
+		ValueDescriptor string `json:"value"`
+	}
+
+	responseFormat struct {
+		Command Command `json:"command"`
 	}
 )
 
@@ -37,7 +42,12 @@ var _ PrompBuilder = (*Builder)(nil)
 
 // Prompt returns the prompt string for the command builder.
 func (b *Builder) Prompt() string {
-	return strings.Join(b.Strings(), "\n") + "\n"
+	return strings.Join([]string{
+		"Commands:",
+		b.NumberedList(),
+		"You should only respond in JSON format as described below",
+		responseFormatExample(),
+	}, "\n")
 }
 
 func (b *Builder) Strings() []string {
@@ -64,7 +74,10 @@ func (b *Builder) NumberedList() string {
 
 	for i, cmd := range b.Strings() {
 		buf.WriteString(fmt.Sprintf("%d. %s", i+1, cmd))
-		buf.WriteString("\n")
+
+		if i < len(b.commands)-1 {
+			buf.WriteString("\n")
+		}
 	}
 
 	return buf.String()
@@ -92,4 +105,22 @@ func (b *Builder) GetCommand(name string) *Command {
 		}
 	}
 	return nil
+}
+
+func responseFormatExample() string {
+	rf := responseFormat{
+		Command: Command{
+			Name: "command name",
+			Args: []Arg{
+				{Name: "arg name", ValueDescriptor: "arg value"},
+			}},
+	}
+
+	buf := bytes.NewBuffer(nil)
+	err := json.NewEncoder(buf).Encode(&rf)
+	if err != nil {
+		panic(err)
+	}
+
+	return buf.String()
 }

@@ -15,16 +15,18 @@ func TestPromptGenerationForCommands(t *testing.T) {
 	b.AddCommand("cmd3", "Empty args cmd", []Arg{})
 
 	result := b.Prompt()
-	a.Equal(`Command 1: "cmd1", args: "start_date": "Start date of search query", "arg2": "arg2"
-Command 2: "cmd2", args: "arg1": "arg1", "arg2": "arg2"
-Empty args cmd: "cmd3", args: none
+	a.Equal(`Commands:
+1. Command 1: "cmd1", args: "start_date": "Start date of search query", "arg2": "arg2"
+2. Command 2: "cmd2", args: "arg1": "arg1", "arg2": "arg2"
+3. Empty args cmd: "cmd3", args: none
+You should only respond in JSON format as described below
+{"command":{"name":"command name","args":[{"name":"arg name","value":"arg value"}]}}
 `, result)
 
 	result = b.NumberedList()
 	a.Equal(`1. Command 1: "cmd1", args: "start_date": "Start date of search query", "arg2": "arg2"
 2. Command 2: "cmd2", args: "arg1": "arg1", "arg2": "arg2"
-3. Empty args cmd: "cmd3", args: none
-`, result)
+3. Empty args cmd: "cmd3", args: none`, result)
 }
 
 func TestCommandRegistration(t *testing.T) {
