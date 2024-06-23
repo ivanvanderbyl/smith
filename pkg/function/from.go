@@ -12,7 +12,7 @@ import (
 )
 
 type AnyFunction interface {
-	CanCall(tc openai.ToolCall) bool
+	IsCallable(tc openai.ToolCall) bool
 	Call(tc openai.ToolCall) (openai.ChatCompletionMessage, error)
 	AsTool() openai.Tool
 }
@@ -115,7 +115,7 @@ func (fc *FunctionCall[I, O]) Call(tc openai.ToolCall) (openai.ChatCompletionMes
 	return nextMessage, nil
 }
 
-func getFunctionName(i interface{}) string {
+func getFunctionName(i any) string {
 	name := runtime.FuncForPC(reflect.ValueOf(i).Pointer()).Name()
 	parts := strings.Split(name, ".")
 	return parts[len(parts)-1]

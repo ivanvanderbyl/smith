@@ -18,6 +18,12 @@ func GetWeather(input GetWeatherParams) (string, error) {
 	return fmt.Sprintf("The weather in %q is sunny and 25ºC", input.City), nil
 }
 
+type WeatherService struct{}
+
+func (ws WeatherService) Get(input GetWeatherParams) (string, error) {
+	return fmt.Sprintf("The weather in %q is sunny and 25ºC", input.City), nil
+}
+
 func TestFrom(t *testing.T) {
 	a := assert.New(t)
 	fn, err := function.From(GetWeather)
@@ -34,6 +40,18 @@ func TestFrom(t *testing.T) {
 	city, ok := params.Properties.Get("city")
 	a.True(ok)
 	a.Equal("The city to get the weather for", city.Description)
+}
+
+func TestStructTools(t *testing.T) {
+	a := assert.New(t)
+
+	svc := new(WeatherService)
+
+	fn, err := function.From(svc.Get)
+	a.Nil(err)
+	a.NotNil(fn)
+	tools := fn.AsTool()
+	a.Equal("Get-fm", tools.Function.Name)
 }
 
 func TestCanCall(t *testing.T) {
