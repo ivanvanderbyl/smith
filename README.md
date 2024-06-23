@@ -1,6 +1,14 @@
 # Smith
 
-Smith is a Go package for building AI assisted agents, capable of understanding natural language and executing commands. The primary backend is OpenAI, however, other backends are planned.
+Smith is a Go package for building agents that are capable of understanding natural language and executing commands.
+
+This is not a framework, rather it is a set of primitives that can be used to build a custom agent that understands a specific set of commands that can be used within a larger project.
+
+## Motivation
+
+After building a few AI projects with langchain and llamaindex, I found that the existing frameworks were too opinionated abstracted away the details that are important, and made it very difficult to debug and understand what was happening.
+
+Almost all AI APIs these days support a similar feature set with similar semantics, so this project aims to provide a set of primitives that make implementing interactive agents trivial and easy to swap out at any stage with an alternative implementation.
 
 ## Installation
 
@@ -13,21 +21,34 @@ go get github.com/ivanvanderbyl/smith
 ```go
 package main
 
-import "github.com/ivanvanderbyl/smith/pkg/command"
+type SearchParams struct {
+	Query     string   `json:"query" jsonschema:"required,description=The search string"`
+	Languages []string `json:"languages" jsonschema:"description=Restrict to a specific language"`
+}
+
+func SearchGitHub(params SearchParams) error {
+  // Do the search
+	return nil
+}
 
 func main() {
-  b := command.NewBuilder()
-  b.AddCommand("search_github", "Search GitHub for the given query", []command.Arg{{Name: "query", ValueDescriptor: "The search string"}, {Name: "lang", ValueDescriptor: "Restrict to a specific language"}})
-  b.AddCommand("search_google", "Search Google for the given query", []command.Arg{{Name: "query", ValueDescriptor: "Search term"}})
+  myFunction := function.From(SearchGitHub)
 
-  println(b.Prompt())
+  resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
+		Model: "gpt-4o",
+		Messages: []openai.ChatCompletionMessage{
+			{
+				Role:    openai.ChatMessageRoleSystem,
+				Content: "You are a helpful assistant.",
+			},
+			{
+				Role:    openai.ChatMessageRoleUser,
+				Content: "Search GitHub for the query 'openai' in Typescript.",
+			},
+		},
+		Tools: []openai.Tool{
+			myFunction.AsTool(),
+		},
+	})
 }
-```
-
-```stdout
-Commands:
-1. Search GitHub for the given query: "search_github", args: "query": "The search string", "lang": "Restrict to a specific language"
-2. Search Google for the given query: "search_google", args: "query": "Search term"
-You should only respond in JSON format as described below
-{"command":{"name":"command name","args":[{"name":"arg name","value":"arg value"}]}}
 ```

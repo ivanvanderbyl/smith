@@ -37,7 +37,14 @@ func From[I any](input FuncErr[I]) (*FunctionCall[I], error) {
 }
 
 // AsTool converts the function call into an OpenAI tool definition
-func (fc *FunctionCall[I]) AsTool() *openai.FunctionDefinition {
+func (fc *FunctionCall[I]) AsTool() openai.Tool {
+	return openai.Tool{
+		Type:     openai.ToolTypeFunction,
+		Function: fc.AsFunctionDefinition(),
+	}
+}
+
+func (fc *FunctionCall[I]) AsFunctionDefinition() *openai.FunctionDefinition {
 	return &openai.FunctionDefinition{
 		Name:        fc.Name,
 		Description: fc.Description,

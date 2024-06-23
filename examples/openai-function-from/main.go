@@ -56,10 +56,7 @@ func realMain() error {
 			},
 		},
 		Tools: []openai.Tool{
-			{
-				Type:     openai.ToolTypeFunction,
-				Function: fn.AsTool(),
-			},
+			fn.AsTool(),
 		},
 	})
 	if err != nil {
