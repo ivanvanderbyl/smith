@@ -17,6 +17,8 @@ type AnyFunction interface {
 	AsTool() openai.Tool
 }
 
+type AnyFunctions []AnyFunction
+
 type FunctionCall[Args any, Result ~string] struct {
 	Name        string
 	Description string
@@ -57,6 +59,15 @@ func (fc *FunctionCall[I, O]) AsTool() openai.Tool {
 		Type:     openai.ToolTypeFunction,
 		Function: fc.AsFunctionDefinition(),
 	}
+}
+
+// AsTools converts a slice of functions into a slice of OpenAI tool definitions
+func (a AnyFunctions) AsTools() []openai.Tool {
+	tools := make([]openai.Tool, len(a))
+	for i, f := range a {
+		tools[i] = f.AsTool()
+	}
+	return tools
 }
 
 func (fc *FunctionCall[I, O]) AsFunctionDefinition() *openai.FunctionDefinition {

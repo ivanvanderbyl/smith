@@ -72,13 +72,9 @@ func realMain() error {
 		return err
 	}
 
-	tools := []function.AnyFunction{
+	tools := function.AnyFunctions{
 		searchGithub,
 		getWeather,
-	}
-	openAITools := []openai.Tool{}
-	for _, tool := range tools {
-		openAITools = append(openAITools, tool.AsTool())
 	}
 
 	ctx := context.Background()
@@ -93,7 +89,7 @@ func realMain() error {
 	resp, err := client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
 		Model:    openai.GPT4o,
 		Messages: dialogue,
-		Tools:    openAITools,
+		Tools:    tools.AsTools(),
 	})
 	if err != nil {
 		return err
@@ -122,7 +118,7 @@ func realMain() error {
 	resp, err = client.CreateChatCompletion(ctx, openai.ChatCompletionRequest{
 		Model:    "gpt-4o",
 		Messages: dialogue,
-		Tools:    []openai.Tool{searchGithub.AsTool()},
+		Tools:    tools.AsTools(),
 	})
 	if err != nil {
 		return err
