@@ -9,11 +9,9 @@ import (
 )
 
 type GetWeatherParams struct {
-	// The city to get the weather for
-	City string `json:"city" jsonschema:"required"`
+	City string `json:"city" jsonschema:"required,description=The city to get the weather for"`
 }
 
-// GetWeather gets the weather for a given city
 func GetWeather(input GetWeatherParams) error {
 	return nil
 }
@@ -27,9 +25,9 @@ func TestFrom(t *testing.T) {
 	a.NotNil(fn.Schema)
 	tool := fn.AsTool()
 	a.NotNil(tool)
-	a.Equal("GetWeather", tool.Name)
-	a.NotNil(tool.Parameters)
-	params, ok := tool.Parameters.(*jsonschema.Schema)
+	a.Equal("GetWeather", tool.Function.Name)
+	a.NotNil(tool.Function.Parameters)
+	params, ok := tool.Function.Parameters.(*jsonschema.Schema)
 	a.True(ok)
 	city, ok := params.Properties.Get("city")
 	a.True(ok)
