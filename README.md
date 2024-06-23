@@ -114,7 +114,7 @@ func main() {
   dialogue = append(dialogue, msg)
   for _, toolCall := range msg.ToolCalls {
     for _, tool := range tools {
-      if !tool.CanCall(toolCall) {
+      if !tool.IsCallable(toolCall) {
         continue
       }
 

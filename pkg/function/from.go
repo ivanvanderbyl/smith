@@ -78,14 +78,14 @@ func (fc *FunctionCall[I, O]) AsFunctionDefinition() *openai.FunctionDefinition 
 	}
 }
 
-func (fc *FunctionCall[I, O]) CanCall(tc openai.ToolCall) bool {
+func (fc *FunctionCall[I, O]) IsCallable(tc openai.ToolCall) bool {
 	return tc.Function.Name == fc.Name
 }
 
 func (fc *FunctionCall[I, O]) Call(tc openai.ToolCall) (openai.ChatCompletionMessage, error) {
 	nextMessage := openai.ChatCompletionMessage{}
 
-	if !fc.CanCall(tc) {
+	if !fc.IsCallable(tc) {
 		return nextMessage, fmt.Errorf("unexpected function name %q, expected %q", tc.Function.Name, fc.Name)
 	}
 

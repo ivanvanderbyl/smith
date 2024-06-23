@@ -41,8 +41,8 @@ func TestCanCall(t *testing.T) {
 	fn, err := function.From(GetWeather)
 	a.Nil(err)
 	a.NotNil(fn)
-	a.True(fn.CanCall(openai.ToolCall{ID: "call_1", Type: openai.ToolTypeFunction, Function: openai.FunctionCall{Name: "GetWeather", Arguments: "{\"City\":\"Sydney\"}"}}))
-	a.False(fn.CanCall(openai.ToolCall{ID: "call_1", Type: openai.ToolTypeFunction, Function: openai.FunctionCall{Name: "Search", Arguments: "{\"City\":\"Sydney\"}"}}))
+	a.True(fn.IsCallable(openai.ToolCall{ID: "call_1", Type: openai.ToolTypeFunction, Function: openai.FunctionCall{Name: "GetWeather", Arguments: "{\"City\":\"Sydney\"}"}}))
+	a.False(fn.IsCallable(openai.ToolCall{ID: "call_1", Type: openai.ToolTypeFunction, Function: openai.FunctionCall{Name: "Search", Arguments: "{\"City\":\"Sydney\"}"}}))
 }
 
 func TestCall(t *testing.T) {
