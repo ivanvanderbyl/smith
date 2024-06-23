@@ -6,9 +6,9 @@ This is not a framework, rather it is a set of primitives that can be used to bu
 
 ## Motivation
 
-After building a few AI projects with langchain and llamaindex, I found that the existing frameworks were too opinionated abstracted away the details that are important, and made it very difficult to debug and understand what was happening.
+After building several AI projects using LangChain and LlamaIndex, I found existing frameworks to be overly opinionated and abstracted. They often obscured important details, making debugging and understanding the underlying processes challenging.
 
-Almost all AI APIs these days support a similar feature set with similar semantics, so this project aims to provide a set of primitives that make implementing interactive agents trivial and easy to swap out at any stage with an alternative implementation.
+Most modern AI APIs support similar feature sets with comparable semantics. This project aims to provide a set of primitives that simplify the implementation of interactive agents. These primitives are designed to be easily interchangeable, allowing for seamless integration of alternative implementations at any stage of development.
 
 ## Installation
 
