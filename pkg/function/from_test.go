@@ -1,6 +1,7 @@
 package function_test
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/invopop/jsonschema"
@@ -12,8 +13,8 @@ type GetWeatherParams struct {
 	City string `json:"city" jsonschema:"required,description=The city to get the weather for"`
 }
 
-func GetWeather(input GetWeatherParams) error {
-	return nil
+func GetWeather(input GetWeatherParams) (string, error) {
+	return fmt.Sprintf("The weather in %q is sunny and 25ºC", input.City), nil
 }
 
 func TestFrom(t *testing.T) {
