@@ -9,6 +9,11 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+type WeatherArgs struct {
+	Location string `json:"location"`
+	Units    string `json:"units"`
+}
+
 func TestEncoding(t *testing.T) {
 	a := assert.New(t)
 
@@ -25,7 +30,12 @@ func TestEncoding(t *testing.T) {
 		{
 			name:     "FunctionCallPart",
 			part:     streaming.FunctionCallPart[string]{Name: "GET_WEATHER", Args: "Sydney, Australia"},
-			expected: `1:{"function_call":{"name":"GET_WEATHER","args":"Sydney, Australia"}}`,
+			expected: `1:{"function_call":{"name":"GET_WEATHER","arguments":"\"Sydney, Australia\""}}`,
+		},
+		{
+			name:     "FunctionCallPart with object",
+			part:     streaming.FunctionCallPart[WeatherArgs]{Name: "GET_WEATHER", Args: WeatherArgs{Location: "Sydney, Australia", Units: "celsius"}},
+			expected: `1:{"function_call":{"name":"GET_WEATHER","arguments":"{\"location\":\"Sydney, Australia\",\"units\":\"celsius\"}"}}`,
 		},
 	}
 

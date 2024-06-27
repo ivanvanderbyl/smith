@@ -22,8 +22,8 @@ type (
 	}
 
 	FunctionCallPart[T any] struct {
-		Name string
-		Args T
+		Name string `json:"name"`
+		Args T      `json:"arguments"`
 	}
 )
 
@@ -43,22 +43,28 @@ func (FunctionCallPart[T]) Code() Code {
 	return FunctionCallPartCode
 }
 
-type functionCall[T any] struct {
+type functionCall struct {
 	Name string `json:"name"`
-	Args T      `json:"args"`
+	Args string `json:"arguments"`
 }
 
 type functionCallWrapper[T any] struct {
-	Fn functionCall[T] `json:"function_call"`
+	Fn functionCall `json:"function_call"`
 }
 
 func (f FunctionCallPart[T]) String() string {
 	v := functionCallWrapper[T]{
-		Fn: functionCall[T]{
+		Fn: functionCall{
 			Name: f.Name,
-			Args: f.Args,
 		},
 	}
+
+	b, err := json.Marshal(f.Args)
+	if err != nil {
+		return ""
+	}
+	v.Fn.Args = string(b)
+
 	buf := new(bytes.Buffer)
 	_ = json.NewEncoder(buf).Encode(v)
 	return buf.String()
