@@ -25,6 +25,10 @@ type (
 		Name string `json:"name"`
 		Args T      `json:"arguments"`
 	}
+
+	AnnotationPart[T any] struct {
+		Value []T
+	}
 )
 
 func (TextPart) isStreamPart() {}
@@ -34,7 +38,12 @@ func (TextPart) Code() Code {
 }
 
 func (t TextPart) String() string {
-	return t.Value
+	b, err := json.Marshal(t.Value)
+	if err != nil {
+		return ""
+	}
+
+	return string(b)
 }
 
 func (FunctionCallPart[T]) isStreamPart() {}
@@ -67,6 +76,18 @@ func (f FunctionCallPart[T]) String() string {
 
 	buf := new(bytes.Buffer)
 	_ = json.NewEncoder(buf).Encode(v)
+	return buf.String()
+}
+
+func (AnnotationPart[T]) isStreamPart() {}
+
+func (AnnotationPart[T]) Code() Code {
+	return MessageAnnotationsPartCode
+}
+
+func (a AnnotationPart[T]) String() string {
+	buf := new(bytes.Buffer)
+	_ = json.NewEncoder(buf).Encode(a.Value)
 	return buf.String()
 }
 

@@ -2,6 +2,7 @@ package streaming_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -12,6 +13,15 @@ import (
 type WeatherArgs struct {
 	Location string `json:"location"`
 	Units    string `json:"units"`
+}
+
+type AgentEvent struct {
+	Type string          `json:"type"`
+	Data json.RawMessage `json:"data"`
+}
+
+type Anot struct {
+	Test string `json:"test"`
 }
 
 func TestEncoding(t *testing.T) {
@@ -25,17 +35,22 @@ func TestEncoding(t *testing.T) {
 		{
 			name:     "TextPart",
 			part:     streaming.TextPart{Value: "Hello, World!"},
-			expected: "0:Hello, World!\n",
+			expected: "0:\"Hello, World!\"\n",
 		},
 		{
 			name:     "FunctionCallPart",
 			part:     streaming.FunctionCallPart[string]{Name: "GET_WEATHER", Args: "Sydney, Australia"},
-			expected: `1:{"function_call":{"name":"GET_WEATHER","arguments":"\"Sydney, Australia\""}}`,
+			expected: `1:"{\"function_call\":{\"name\":\"GET_WEATHER\",\"arguments\":\"{\\\"location\\\":\\\"Sydney, Australia\\\",\\\"units\\\":\\\"celsius\\\"}\"}}`,
 		},
 		{
 			name:     "FunctionCallPart with object",
 			part:     streaming.FunctionCallPart[WeatherArgs]{Name: "GET_WEATHER", Args: WeatherArgs{Location: "Sydney, Australia", Units: "celsius"}},
 			expected: `1:{"function_call":{"name":"GET_WEATHER","arguments":"{\"location\":\"Sydney, Australia\",\"units\":\"celsius\"}"}}`,
+		},
+		{
+			name:     "AnnotationPart",
+			part:     streaming.AnnotationPart[Anot]{Value: []Anot{{Test: "value"}}},
+			expected: `8:[{"test":"value"}]`,
 		},
 	}
 

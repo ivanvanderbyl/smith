@@ -53,6 +53,7 @@ func streamChat(w http.ResponseWriter, req *http.Request) {
 	w.Header().Set("Transfer-Encoding", "chunked")
 	w.WriteHeader(http.StatusOK)
 
+	// Stream an empty response to the client to signal the start of the chat.
 	b, err := streaming.Marshal(streaming.TextPart{Value: string("")})
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
